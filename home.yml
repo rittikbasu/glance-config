@@ -8,9 +8,10 @@
           first-day-of-week: monday
 
         - type: weather
-          location: New York, USA
+          location: ${LOCATION}
           units: metric
           hour-format: 12h
+          hide-location: true
 
         - type: twitch-channels
           channels:
@@ -21,6 +22,8 @@
               name: Bitcoin
             - symbol: NVDA
               name: NVIDIA
+            - symbol: TSLA
+              name: Tesla
             - symbol: AAPL
               name: Apple
             - symbol: MSFT
@@ -44,7 +47,7 @@
                   title: Andrej Karpathy
                 - url: http://www.aaronsw.com/2002/feeds/pgessays.rss
                   title: Paul Graham
-                  limit: 2
+                  limit: 1
                 - url: https://openai.com/news/rss.xml
                   title: OpenAI
                   limit: 2
@@ -55,13 +58,14 @@
             - UCR-DXc1voovS8nhAvccRZhg # Jeff Geerling
             - UCsBjURrPoezykLs9EqgamOA # Fireship
             - UCnRVL1-HJnXWB_Xi2dAoTcg # bryan johnson
+            - UCjSEJkpGbcZhvo0lr-44X_w # techhut
 
         - type: split-column
           widgets:
             - type: custom-api
               title: Next Race
-              cache: 5m
-              url: http://${F1_API_URL}/f1/next_race/
+              cache: 30m
+              url: ${F1_API_URL}/f1/next_race/
               template: |
                 <div class="flex flex-column gap-10">
                   {{ $session := index (.JSON.Array "race") 0 }}
@@ -87,7 +91,7 @@
 
                     <div style="margin-block: 1rem;">
                       <img
-                        src="http://${F1_API_URL}/f1/next_map/"
+                        src="${F1_API_URL}/f1/next_map/"
                         onerror="this.style.display='none'"
                         style="max-width: 100%; height: auto; border-radius: 8px;"
                       />
@@ -112,8 +116,8 @@
               widgets:
                 - type: custom-api
                   title: Constructors Standings
-                  cache: 5m
-                  url: http://${F1_API_URL}/f1/constructors_standings/
+                  cache: 30m
+                  url: ${F1_API_URL}/f1/constructors_standings/
                   template: |
                     <ul class="list collapsible-container" data-collapse-after="5">
                       {{ range $i, $v := .JSON.Array "constructors" }}
@@ -133,8 +137,8 @@
 
                 - type: custom-api
                   title: Drivers Standings
-                  cache: 5m
-                  url: http://${F1_API_URL}/f1/drivers_standings/
+                  cache: 30m
+                  url: ${F1_API_URL}/f1/drivers_standings/
                   template: |
                     <ul class="list collapsible-container" data-collapse-after="5">
                       {{ range $i, $v := .JSON.Array "drivers" }}
@@ -174,7 +178,7 @@
         - type: custom-api
           title: What's Up Docker?
           cache: 1h
-          url: http://${WUD_URL}/api/containers/
+          url: ${WUD_URL}/api/containers/
           method: GET
           template: |
             {{/* You are using WUD Monitor v2.0*/}}
@@ -509,6 +513,19 @@
                 {{ end }}
               </ul>
             {{ end }}
+
+        - type: monitor
+          cache: 1m
+          title: Services
+          sites:
+            - title: Pi-Hole
+              url: ${PIHOLE_URL}/login
+              check-url: ${PIHOLE_URL}/
+              icon: di:pi-hole
+            - title: PocketBase
+              url: ${PB_URL}/_/
+              check-url: ${PB_URL}/api/health
+              icon: mdi:database
 
         - type: custom-api
           title: Trending Repositories
